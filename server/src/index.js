@@ -1,9 +1,9 @@
 import app from "./app.js";
 import logger from "./configs/logger.config.js";
 import mongoose from "mongoose";
+import * as config from "./utils/config.js";
 
 
-const port = process.env.PORT || 5000;
 let server;
 
 
@@ -19,7 +19,7 @@ if(process.env.NODE_ENV === "production") {
 
 
 // connect to mongoDB
-mongoose.connect(process.env.MONGODB_URL, {
+mongoose.connect(config.mongodb_url, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
@@ -31,9 +31,9 @@ mongoose.connect(process.env.MONGODB_URL, {
 );
 
 
-server = app.listen(port, () => {
+server = app.listen(config.port, () => {
   logger.info(`Server in ${process.env.NODE_ENV} `);
-  logger.info(`Server is running on port: ${port}`);
+  logger.info(`Server is running on port: ${config.port}`);
 });
 
 
