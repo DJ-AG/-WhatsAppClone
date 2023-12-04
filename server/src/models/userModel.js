@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import validator from "validator";
 import bcrypt from "bcrypt";
 import * as config from "../utils/config.js";
 import jwt from "jsonwebtoken";
+import validator from "validator";
 // will be used once reset password is implemented ---> import crypto from "crypto";
 
 const userSchema = new mongoose.Schema(
@@ -24,10 +24,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Plese provide a password"],
       minLenght: [6, "Password must be at least 6 characters long"],
-      maxLenght: [
-        128,
-        "Password make sure that you password is not more than 128 characters long",
-      ],
+      maxLenght: [128,"Password make sure that you password is not more than 128 characters long"],
+      select:false
     },
   },
   {

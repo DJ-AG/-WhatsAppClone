@@ -1,13 +1,22 @@
 import express from "express";
 import trimRequest from "trim-request";
-import { login, logout, refreshToken, register } from "../controllers/auth.controller.js";
+import { login, logout, register,getUser } from "../controllers/auth.controller.js";
+
+import { protect } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.route("/register").post(trimRequest.all,register)
-router.route("/login").post(trimRequest.all,login)
-router.route("/logout").get(trimRequest.all,logout)
-router.route("/refresh_token").get(trimRequest.all,refreshToken)
+
+router.post("/register",trimRequest.all,register)
+
+router.post("/login",trimRequest.all,login)
+
+router.get("/logout",trimRequest.all,logout)
+
+
+router.use(protect)
+
+router.get("/getuser",trimRequest.all,getUser)
 
 
 export default router;

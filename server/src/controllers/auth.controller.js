@@ -1,10 +1,10 @@
 import User from "../models/userModel.js";
 import validator from "validator";
 import * as config from "../utils/config.js";
+import asyncHandler from "../middlewares/asyncHandler.js";
 
 
- const register = async (req, res, next) => {
-  try {
+ const register = asyncHandler(async (req, res, next) => {
 
     // get user data from req.body
     const { name, email, password, status, avatar } = req.body;
@@ -30,8 +30,6 @@ import * as config from "../utils/config.js";
     // check if email already exist
     const checkDB = await User.findOne({email});
 
-    console.log(checkDB)
-
     if(checkDB) throw new Error("This email address already exist")
 
     // create a new user with the data from req.body
@@ -47,20 +45,13 @@ import * as config from "../utils/config.js";
 
     // send back the new user
     sendTokenResponse(user, 200, res)
+});
 
-  } catch (error) {
-
-    next(error);
-
-  }
-};
-
- const login = async (req, res, next) => {
+ const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
-  try {
 
     // check if user exist
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
 
     // if user does not exist throw an error
     if (!user) throw new Error("Invalid credentials");
@@ -72,29 +63,35 @@ import * as config from "../utils/config.js";
     if (!isMatch) throw new Error("Invalid credentials");
 
     // send back the user
-    res.status(200).json({ data: user, status: "success" });
+    sendTokenResponse(user, 200, res);
 
-  } catch (error) {
+});
 
-    next(error);
+ const logout = asyncHandler(async (req, res, next) => {
+  res.cookie('token', 'none', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
 
-  }
-};
+  res.status(200).json({
+    success: true,
+    data: {}
+  });
+});
 
- const logout = async (req, res, next) => {
-  try {
-  } catch (error) {
-    next(error);
-  }
-};
 
- const refreshToken = async (req, res, next) => {
-  try {
-  } catch (error) {
-    next(error);
-  }
-};
+const getUser = asyncHandler(async (req, res, next) => {
 
+  const user = await User.findById(req.user.id);
+
+  console.log("this is user :",user)
+
+  res.status(200).json({ data: user, status: "success" });
+});
+
+  
+
+// Get access token from model, create cookie and send response.
 const sendTokenResponse = (user, statusCode, res) => {
 
   // Generate a JWT token using a method from the User model.
@@ -115,4 +112,4 @@ const sendTokenResponse = (user, statusCode, res) => {
   res.status(statusCode).cookie("token", token, options).json({success: true, token});
 }
 
-export { register, login, logout, refreshToken}
+export { register, login, logout, getUser}
