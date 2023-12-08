@@ -75,7 +75,8 @@ import asyncHandler from "../middlewares/asyncHandler.js";
 
   res.status(200).json({
     success: true,
-    data: {}
+    data: {},
+    message: "User logged out successfully"
   });
 });
 
